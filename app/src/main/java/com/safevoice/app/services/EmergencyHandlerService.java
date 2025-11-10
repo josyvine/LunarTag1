@@ -54,7 +54,9 @@ public class EmergencyHandlerService extends Service {
 
         // Use the LocationHelper to get the current location.
         // The callback will handle the rest of the emergency logic.
-        locationHelper.getCurrentLocation(new LocationHelper.LocationCallback() {
+        // --- THIS IS THE FIX ---
+        // Changed "LocationCallback" to the correct name "LocationResultCallback"
+        locationHelper.getCurrentLocation(new LocationHelper.LocationResultCallback() {
             @Override
             public void onLocationResult(Location location) {
                 if (location != null) {
@@ -188,4 +190,4 @@ public class EmergencyHandlerService extends Service {
         // This is a started service, not a bound one.
         return null;
     }
-          }
+}
