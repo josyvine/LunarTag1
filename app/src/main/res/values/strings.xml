@@ -1,6 +1,10 @@
 <resources>
     <!-- App Identity -->
     <string name="app_name">Safe Voice</string>
+    
+    <!-- THIS IS THE NEW STRING REQUIRED FOR GOOGLE SIGN-IN -->
+    <!-- It is copied from your google-services.json file -->
+    <string name="default_web_client_id">1013718891067-ogca31bvt1f2rvcf0jed41gccienmdg8.apps.googleusercontent.com</string>
 
     <!-- Disclaimer Screen -->
     <string name="disclaimer_title">Important Disclaimer &amp; Terms of Service</string>
@@ -68,7 +72,6 @@
     <string name="kyc_instructions_id">Position your ID card inside the frame.</string>
     <string name="kyc_instructions_face">Now, position your face in the frame.</string>
     <string name="kyc_status_verifying">Verifying...</string>
-    <!-- THIS IS THE MISSING STRING THAT CAUSED THE BUILD ERROR -->
     <string name="face_guide_box">Face guide box</string>
 
 </resources>
