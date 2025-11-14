@@ -8,36 +8,20 @@
     android:paddingEnd="24dp"
     android:paddingBottom="20dp">
 
-    <!-- Input field for the contact's name -->
+    <!-- THIS IS THE NEW INPUT FIELD FOR SEARCHING BY EMAIL -->
+    <!-- The old name and phone number fields have been replaced by this single field. -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_name"
+        android:id="@+id/text_input_layout_email"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/contact_name_hint">
+        android:hint="@string/contact_email_hint">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_contact_name"
+            android:id="@+id/edit_text_contact_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName|textCapWords" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Input field for the contact's phone number -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_phone"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/contact_phone_hint">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_contact_phone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="phone" />
+            android:inputType="textEmailAddress" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
