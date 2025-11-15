@@ -122,6 +122,8 @@ public class FirebaseAlertService extends FirebaseMessagingService {
         notificationManager.notify(1, notificationBuilder.build());
     }
 
+
+
     private void playAlarmSound() {
         try {
             if (ringtone != null && ringtone.isPlaying()) {
