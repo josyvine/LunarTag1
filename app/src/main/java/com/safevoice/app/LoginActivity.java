@@ -1,3 +1,5 @@
+// PASTE THIS ENTIRE CODE BLOCK TO REPLACE YOUR EXISTING LoginActivity.java FILE
+
 package com.safevoice.app;
 
 import android.content.Intent;
@@ -6,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+// --- THIS IS THE CORRECTED IMPORT ---
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,17 +40,17 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-    // --- ADD THIS LINE ---
     private FirebaseFirestore db;
 
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
-            new ActivityActivityResultContracts.StartActivityForResult(),
+            // --- THIS IS THE CORRECTED LINE ---
+            new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                     try {
                         GoogleSignInAccount account = task.getResult(ApiException.class);
-                        firebaseAuthWithGoogle(account); // Pass the whole account
+                        firebaseAuthWithGoogle(account);
                     } catch (ApiException e) {
                         Log.w(TAG, "Google sign in failed", e);
                         Toast.makeText(this, "Google Sign-In Failed.", Toast.LENGTH_SHORT).show();
@@ -62,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         mAuth = FirebaseAuth.getInstance();
-        // --- ADD THIS LINE ---
         db = FirebaseFirestore.getInstance();
 
         // Configure Google Sign-In
@@ -81,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
         signInLauncher.launch(signInIntent);
     }
 
-    // --- THIS IS THE UPDATED METHOD ---
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -90,27 +91,20 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithCredential:success");
-                            // --- LOGIC TO CREATE USER PROFILE IN FIRESTORE ---
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
-                                // Get the user's document reference using their UID
                                 DocumentReference userDocRef = db.collection("users").document(user.getUid());
 
-                                // Check if the document already exists
                                 userDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> snapshotTask) {
                                         if (snapshotTask.isSuccessful()) {
                                             DocumentSnapshot document = snapshotTask.getResult();
-                                            // If the document does NOT exist, it's a new user. Create their profile.
                                             if (!document.exists()) {
                                                 Log.d(TAG, "New user. Creating profile document in Firestore.");
                                                 Map<String, Object> userData = new HashMap<>();
                                                 userData.put("email", user.getEmail());
                                                 userData.put("uid", user.getUid());
-                                                // We don't know their verified name or phone yet,
-                                                // so we leave those fields out for now.
-                                                // They will be added after KYC and profile setup.
 
                                                 userDocRef.set(userData)
                                                         .addOnSuccessListener(aVoid -> Log.d(TAG, "User profile created."))
@@ -121,13 +115,11 @@ public class LoginActivity extends AppCompatActivity {
                                         } else {
                                             Log.w(TAG, "Failed to check for user document.", snapshotTask.getException());
                                         }
-                                        // Proceed to finish the activity regardless
                                         Toast.makeText(LoginActivity.this, "Sign-In Successful.", Toast.LENGTH_SHORT).show();
                                         finish();
                                     }
                                 });
                             } else {
-                                // Fallback in case user is null after successful sign-in
                                 finish();
                             }
                         } else {
