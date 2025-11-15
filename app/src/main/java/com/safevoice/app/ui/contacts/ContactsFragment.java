@@ -30,6 +30,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -212,6 +213,7 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.OnCont
         dialog.show();
     }
 
+    // --- THIS IS THE CORRECTED METHOD WITH THE ERROR POP-UP ---
     private void searchUserByEmail(String email, final AlertDialog searchDialog) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null || email.equalsIgnoreCase(currentUser.getEmail())) {
@@ -229,7 +231,21 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.OnCont
                             String recipientName = userDoc.getString("verifiedName");
                             confirmAndSendRequest(recipientUid, recipientName, searchDialog);
                         } else {
-                            Toast.makeText(getContext(), R.string.user_not_found, Toast.LENGTH_SHORT).show();
+                            // --- NEW LOGIC TO CATCH THE ERROR AND SHOW A POP-UP ---
+                            Exception e = task.getException();
+                            if (e instanceof FirebaseFirestoreException && ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.FAILED_PRECONDITION) {
+                                // This is the specific error for a missing index.
+                                String errorMessage = e.getMessage();
+                                new AlertDialog.Builder(requireContext())
+                                        .setTitle("Firebase Index Required")
+                                        .setMessage(errorMessage) // This will contain the URL
+                                        .setPositiveButton("OK", null)
+                                        .show();
+                            } else {
+                                // For all other errors, including a legitimate "user not found"
+                                Toast.makeText(getContext(), R.string.user_not_found, Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "Search failed", e);
+                            }
                         }
                     }
                 });
@@ -317,7 +333,6 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.OnCont
         });
     }
 
-    // --- THIS IS THE UPDATED METHOD ---
     @Override
     public void onAcceptRequest(DocumentSnapshot request) {
         String senderUid = request.getString("senderUid");
@@ -325,34 +340,29 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.OnCont
 
         if (senderUid == null) return;
 
-        // Fetch the sender's full profile to get their phone number
         db.collection("users").document(senderUid).get()
-            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        DocumentSnapshot userProfile = task.getResult();
-                        // This assumes the phone number is stored in a field called "phoneNumber"
-                        String senderPhone = userProfile.getString("phoneNumber");
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            DocumentSnapshot userProfile = task.getResult();
+                            String senderPhone = userProfile.getString("phoneNumber");
 
-                        // If the phone number field doesn't exist in their profile, use a safe default
-                        if (senderPhone == null || senderPhone.isEmpty()) {
-                            senderPhone = "No number provided";
+                            if (senderPhone == null || senderPhone.isEmpty()) {
+                                senderPhone = "No number provided";
+                            }
+
+                            Contact newContact = new Contact(senderName, senderPhone, senderUid);
+                            contactsManager.addPriorityContact(newContact);
+                            loadContacts();
+
+                            request.getReference().delete();
+                        } else {
+                            Log.w(TAG, "Failed to get user profile for sender: " + senderUid, task.getException());
+                            Toast.makeText(getContext(), "Could not find user profile to add contact.", Toast.LENGTH_SHORT).show();
                         }
-
-                        // Create the contact with the REAL phone number and UID, then save it
-                        Contact newContact = new Contact(senderName, senderPhone, senderUid);
-                        contactsManager.addPriorityContact(newContact);
-                        loadContacts(); // Refresh the screen to show the new contact
-
-                        // Finally, delete the request from Firestore now that it's handled
-                        request.getReference().delete();
-                    } else {
-                        Log.w(TAG, "Failed to get user profile for sender: " + senderUid, task.getException());
-                        Toast.makeText(getContext(), "Could not find user profile to add contact.", Toast.LENGTH_SHORT).show();
                     }
-                }
-            });
+                });
     }
 
     @Override
@@ -362,7 +372,6 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.OnCont
 
     @Override
     public void onContactOptionsClicked(final Contact contact) {
-        // Find the correct view to anchor the popup menu
         int position = priorityContactList.indexOf(contact);
         RecyclerView.ViewHolder holder = binding.recyclerViewContacts.findViewHolderForAdapterPosition(position);
         if (holder == null) return;
