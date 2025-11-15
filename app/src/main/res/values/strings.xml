@@ -1,4 +1,4 @@
-<resources> 
+<resources>
     <!-- App Identity -->
     <string name="app_name">Safe Voice</string>
 
@@ -27,6 +27,7 @@
     <!-- Bottom Navigation Titles -->
     <string name="title_home">Home</string>
     <string name="title_contacts">Contacts</string>
+    <string name="title_profile">Profile</string> <!-- THIS IS THE NEW LINE -->
     <string name="title_settings">Settings</string>
 
     <!-- Home Fragment -->
