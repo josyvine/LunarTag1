@@ -39,23 +39,22 @@
                     android:textAppearance="?attr/textAppearanceBody2" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_upload_firebase_json"
+                    android:id="@+id/buttonUploadFirebaseJson"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/settings_upload_json_button" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_show_rules"
+                    android:id="@+id/buttonShowRules"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/settings_show_rules_button" />
 
-                <!-- Hidden Firestore Rule Helper -->
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/card_rules_helper"
+                    android:id="@+id/cardRulesHelper"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -72,7 +71,7 @@
                         android:padding="12dp">
 
                         <TextView
-                            android:id="@+id/text_firestore_rule"
+                            android:id="@+id/textFirestoreRule"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_firebase_rules_helper_text"
@@ -80,7 +79,7 @@
                             android:textIsSelectable="true" />
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/button_copy_rule"
+                            android:id="@+id/buttonCopyRule"
                             style="@style/Widget.MaterialComponents.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -121,28 +120,28 @@
                     android:textAppearance="?attr/textAppearanceBody1" />
 
                 <RadioGroup
-                    android:id="@+id/radio_group_theme"
+                    android:id="@+id/radioGroupTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/radio_light"
+                        android:id="@+id/radioLight"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/settings_theme_light" />
 
                     <RadioButton
-                        android:id="@+id/radio_dark"
+                        android:id="@+id/radioDark"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/settings_theme_dark" />
 
                     <RadioButton
-                        android:id="@+id/radio_system"
+                        android:id="@+id/radioSystem"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -152,12 +151,12 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Emergency Settings Card -->
+        <!-- In-App Call Settings Card -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/settings_header_emergency"
+            android:text="@string/settings_webrtc_header"
             android:textAppearance="?attr/textAppearanceHeadline6" />
 
         <com.google.android.material.card.MaterialCardView
@@ -167,14 +166,114 @@
             app:cardCornerRadius="8dp"
             app:cardElevation="2dp">
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switch_webrtc"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="@string/settings_webrtc_toggle"
-                android:textAppearance="?attr/textAppearanceBody1" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_call_preference_title"
+                    android:textAppearance="?attr/textAppearanceBody1" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroupCallPreference"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/radioStandardCall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_call_preference_standard" />
+
+                    <RadioButton
+                        android:id="@+id/radioWebrtcCall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_call_preference_webrtc" />
+                </RadioGroup>
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Twilio Settings Card -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/settings_twilio_header"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutTwilioSid"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/settings_twilio_account_sid_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextTwilioSid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutTwilioApiKey"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/settings_twilio_api_key_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextTwilioApiKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutTwilioApiSecret"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/settings_twilio_api_secret_hint"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextTwilioApiSecret"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSaveTwilio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/settings_save_twilio_button" />
+
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
