@@ -1,0 +1,70 @@
+LUNAR TAG - QA TEST PLAN & CHECKLIST
+
+This document outlines the testing procedures to ensure the Lunar Tag application meets all functional, performance, and compliance requirements.
+
+1. ONBOARDING & PERMISSIONS
+[ ] Verify that the Onboarding screen appears on the first launch.
+[ ] Verify that after accepting, the Onboarding screen does not appear on subsequent launches.
+[ ] Verify that the app correctly prompts for CAMERA and LOCATION permissions.
+[ ] Test the app's behavior if permissions are denied (e.g., camera screen shows an error).
+[ ] Verify the instructions for enabling the optional Accessibility Service are clear.
+[ ] Test the flow of guiding the user to the system's Accessibility settings and back.
+
+2. CAMERA & WATERMARKING
+[ ] Verify the full-screen camera preview displays correctly.
+[ ] Verify the OSMDroid mini-map in the top-right corner updates with the user's current location.
+[ ] Verify the GPS accuracy indicator in the top-left corner changes color (Green/Orange/Red) based on location accuracy.
+[ ] Verify the watermark block is rendered correctly at the bottom of every saved photo.
+[ ] Check that all text lines in the watermark are present and legible:
+    [ ] "GPS map icamera"
+    [ ] Company Name (from settings)
+    [ ] Address (from reverse geocoding)
+    [ ] Lat/Lon (with accuracy)
+    [ ] Time and Date (with AM/PM)
+    [ ] Shift Time (from settings, with AM/PM)
+[ ] Verify the map preview image is present in the watermark as per the example.
+[ ] Test watermarking across different screen orientations and resolutions.
+
+3. DATA & METADATA
+[ ] Capture a photo and inspect the saved JPEG file's EXIF data.
+[ ] Verify that the EXIF GPS tags (latitude, longitude) match the real capture location.
+[ ] Verify that the EXIF DateTimeOriginal tag matches the real capture time.
+[ ] Verify that the EXIF ImageDescription tag contains the correct JSON payload with both `assignedTimestamp` and `captureTimestampReal`.
+[ ] After capture, verify that a corresponding record is created in the local Room database `photos` table with all correct fields.
+[ ] After capture, verify that an audit log entry with the action "CAPTURE" is created in the local `audit_logs` table.
+
+4. SCHEDULING & SENDING (CRITICAL PATH)
+[ ] Capture a photo with an assigned future timestamp.
+[ ] Verify that an exact alarm is scheduled using AlarmManager/WorkManager.
+[ ] Put the device into Doze mode (e.g., using ADB commands) and verify the alarm still fires at the correct time.
+[ ] Verify that when the alarm fires, the `SendService` starts in the foreground.
+[ ] Verify that the WhatsApp share UI is automatically launched with the correct image pre-loaded.
+[ ] Test the fallback: if WhatsApp is not installed, verify the app handles the error gracefully.
+[ ] Test the manual send: With the Accessibility Service OFF, verify the user is left on the share screen to manually press send.
+[ ] After a successful manual send, verify the photo's status is updated in the local database and a "SEND_SUCCESS" log is created.
+
+5. ACCESSIBILITY SERVICE AUTOMATION (OPTIONAL)
+[ ] Enable the Lunar Tag Accessibility Service in the system settings.
+[ ] Trigger a scheduled send.
+[ ] Verify the service correctly identifies the WhatsApp group name (from settings) on the share screen and clicks it.
+[ ] Verify the service correctly identifies the final "Send" button and clicks it, completing the send automatically.
+[ ] Test failure cases:
+    [ ] What happens if the group name is wrong?
+    [ ] What happens if the WhatsApp UI changes? (The service should fail gracefully, leaving the user to send manually).
+[ ] After a successful automated send, verify status is updated and the correct audit log is created.
+
+6. "ADMIN" MODE (CUSTOM TIMESTAMPS)
+[ ] By default (toggle `false`), verify the Schedule Editor and Admin Console UI are completely hidden.
+[ ] Use an FCM push message to set `customTimestampEnabled` to `true`.
+[ ] Verify that the Schedule Editor and Admin Console UI are now visible.
+[ ] In the Schedule Editor, add several preset timestamps.
+[ ] Go to the camera, and capture multiple photos. Verify that each photo is assigned the next timestamp from the preset list in the correct order.
+[ ] Verify the watermark on these photos shows the ASSIGNED time, not the real time.
+[ ] Verify the EXIF data and local database record for these photos still contain the REAL capture time.
+[ ] Use an FCM push message to set `customTimestampEnabled` to `false` again.
+[ ] Verify that the admin UI is once again hidden.
+
+7. AUDIT & COMPLIANCE
+[ ] Verify that every key action (CAPTURE, ASSIGN, SEND_ATTEMPT, SEND_SUCCESS, SEND_FAILED) creates an entry in the local `audit_logs` table.
+[ ] In the Admin Console, verify that all logs are displayed correctly.
+[ ] Verify the log viewer shows both the Printed Timestamp and the Real Capture Time for each photo.
